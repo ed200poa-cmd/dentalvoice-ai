@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 import agent
@@ -53,6 +54,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # ---------------------------------------------------------------------------
@@ -280,17 +283,7 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    return JSONResponse({
-        "name": "DentalVoice AI Demo",
-        "description": "AI Voice Agent for Smile Care Dental",
-        "endpoints": {
-            "POST /webhook/voice": "Twilio inbound call webhook",
-            "POST /webhook/gather": "Twilio gather handler",
-            "GET /logs": "View call history",
-            "GET /logs/{call_sid}": "View conversation transcript",
-            "GET /health": "Health check",
-        },
-    })
+    return FileResponse("static/index.html")
 
 
 if __name__ == "__main__":
