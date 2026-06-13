@@ -10,7 +10,7 @@ from knowledge_base import get_faq_context, get_available_slots
 logger = logging.getLogger(__name__)
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-MODEL = "claude-haiku-20240307"
+MODEL = "claude-haiku-4-5-20251001"
 
 SYSTEM_PROMPT = """You are Sarah, a friendly dental receptionist at Smile Care Dental. You help patients book appointments, answer questions about services, and provide office information. Keep responses under 40 words. Never give medical advice. If a patient has a dental emergency, immediately offer to transfer to a dentist.
 
