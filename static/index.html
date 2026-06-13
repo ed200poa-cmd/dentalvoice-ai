@@ -130,6 +130,51 @@
     .btn:hover { opacity: 0.85; }
     .btn-primary { background: #0284c7; color: #fff; }
     .btn-secondary { background: rgba(255,255,255,0.07); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Live demo chat */
+    .live-demo-card {
+      background: #1e293b;
+      border: 1px solid rgba(14,165,233,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .live-demo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .live-demo-header h3 { font-size: 14px; font-weight: 600; color: #7dd3fc; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; }
+    .reset-btn { background: rgba(255,255,255,0.05); color: #64748b; border: 1px solid rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+    .reset-btn:hover { color: #94a3b8; }
+    .chat-messages { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; margin-bottom: 10px; }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .chat-typing { font-size: 12px; color: #64748b; min-height: 18px; margin-bottom: 10px; }
+    .chat-input-row { display: flex; gap: 8px; }
+    .chat-input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .chat-input:focus { border-color: rgba(14,165,233,0.4); }
+    .chat-input::placeholder { color: #475569; }
+    .chat-send { background: #0284c7; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .chat-send:hover { opacity: 0.85; }
+    .chat-send:disabled { opacity: 0.35; cursor: not-allowed; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .chip { background: rgba(14,165,233,0.08); color: #7dd3fc; border: 1px solid rgba(14,165,233,0.2); padding: 5px 13px; border-radius: 9999px; font-size: 12px; cursor: pointer; transition: background 0.15s; }
+    .chip:hover { background: rgba(14,165,233,0.16); }
+    .chat-notice { font-size: 11px; color: #334155; text-align: center; margin-top: 10px; }
+    .booking-badge { text-align:center; font-size:13px; color:#6ee7b7; padding:9px 14px; background:rgba(16,185,129,0.1); border-radius:8px; border:1px solid rgba(16,185,129,0.2); }
+    .transfer-badge { text-align:center; font-size:13px; color:#fbbf24; padding:9px 14px; background:rgba(245,158,11,0.1); border-radius:8px; border:1px solid rgba(245,158,11,0.2); }
   </style>
 </head>
 <body>
@@ -161,6 +206,31 @@
       <div class="flow-step"><div class="icon">🔊</div><div class="label">ElevenLabs TTS</div></div>
       <div class="flow-arrow">→</div>
       <div class="flow-step"><div class="icon">✅</div><div class="label">Booked!</div></div>
+    </div>
+
+    <!-- Live Interactive Demo -->
+    <div class="live-demo-card">
+      <div class="live-demo-header">
+        <h3>🟢 Live Demo — Chat with Alex AI</h3>
+        <button class="reset-btn" id="reset-chat">↺ New Conversation</button>
+      </div>
+
+      <div class="chat-messages" id="chat-msgs"></div>
+      <div class="chat-typing" id="chat-typing"></div>
+
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Type a message and press Enter…" autocomplete="off"/>
+        <button class="chat-send" id="chat-send">Send</button>
+      </div>
+
+      <div class="suggestions">
+        <span class="chip">Book an appointment</span>
+        <span class="chip">What are your hours?</span>
+        <span class="chip">Do you take Delta Dental?</span>
+        <span class="chip">I have a bad toothache</span>
+        <span class="chip">Where are you located?</span>
+      </div>
+      <div class="chat-notice">This demo connects to the live Alex AI — same engine used for real phone calls</div>
     </div>
 
     <!-- Sample transcript -->
@@ -246,5 +316,85 @@
     </div>
 
   </div>
+  <script>
+  (function () {
+    let sessionId = null;
+    const msgs    = document.getElementById('chat-msgs');
+    const input   = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send');
+    const typing  = document.getElementById('chat-typing');
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function addBubble(role, text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'turn ' + (role === 'assistant' ? 'agent' : 'user');
+      const avatar = role === 'assistant' ? '🦷' : '👤';
+      const label  = role === 'assistant' ? 'Alex · AI Agent' : 'You';
+      wrap.innerHTML = `
+        <div class="turn-avatar">${avatar}</div>
+        <div>
+          <div class="turn-bubble">${esc(text)}</div>
+          <div class="turn-label">${label}</div>
+        </div>`;
+      msgs.appendChild(wrap);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function addBadge(cls, text) {
+      const el = document.createElement('div');
+      el.className = cls;
+      el.textContent = text;
+      msgs.appendChild(el);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function setBusy(on) {
+      typing.textContent = on ? 'Alex is typing…' : '';
+      sendBtn.disabled   = on;
+      input.disabled     = on;
+    }
+
+    async function send(text) {
+      text = text.trim();
+      if (!text) return;
+      input.value = '';
+      addBubble('user', text);
+      setBusy(true);
+      try {
+        const res  = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, session_id: sessionId }),
+        });
+        const data = await res.json();
+        sessionId  = data.session_id;
+        addBubble('assistant', data.response);
+        if (data.booking_confirmed) addBadge('booking-badge', '✅ Appointment booked! A confirmation text would be sent.');
+        if (data.should_transfer)   addBadge('transfer-badge', '📞 Transferring you to a staff member…');
+      } catch (e) {
+        addBubble('assistant', '⚠️ Connection error — please try again.');
+      }
+      setBusy(false);
+      input.focus();
+    }
+
+    function initChat() {
+      msgs.innerHTML = '';
+      sessionId = null;
+      addBubble('assistant', 'Thank you for calling Smile Care Dental! This is Alex. How can I help you today — are you looking to schedule an appointment, or do you have a question about our services?');
+      input.focus();
+    }
+
+    sendBtn.addEventListener('click', () => send(input.value));
+    input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) send(input.value); });
+    document.getElementById('reset-chat').addEventListener('click', initChat);
+    document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => send(c.textContent)));
+
+    initChat();
+  })();
+  </script>
 </body>
 </html>

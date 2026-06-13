@@ -1,4 +1,5 @@
 import os
+import uuid
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import uvicorn
 
 import agent
@@ -278,6 +280,35 @@ async def health_check():
             "elevenlabs": bool(os.getenv("ELEVENLABS_API_KEY")),
             "twilio": bool(os.getenv("TWILIO_ACCOUNT_SID")),
         },
+    })
+
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: str | None = None
+
+
+@app.post("/api/chat")
+async def web_chat(body: ChatRequest):
+    """Web demo chat — lets visitors test Alex AI without a phone call."""
+    session_id = body.session_id or f"web-{uuid.uuid4().hex[:8]}"
+    call_log.create_call_record(call_sid=session_id, caller_number="web-demo")
+    call_log.log_turn(call_sid=session_id, role="user", content=body.message)
+
+    response_text, should_transfer, booking_confirmed = await agent.process_speech(
+        call_sid=session_id,
+        speech_input=body.message,
+    )
+
+    call_log.log_turn(call_sid=session_id, role="assistant", content=response_text)
+    summary = agent.get_session_summary(session_id)
+
+    return JSONResponse({
+        "session_id": session_id,
+        "response": response_text,
+        "booking_confirmed": booking_confirmed,
+        "should_transfer": should_transfer,
+        "intent": summary.get("intent"),
     })
 
 
