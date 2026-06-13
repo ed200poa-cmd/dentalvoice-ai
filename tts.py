@@ -8,7 +8,7 @@ import httpx
 logger = logging.getLogger(__name__)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
-ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "TxGEqnHWrfWFTfGW9XjX")  # Josh — warm, smooth and steady
+ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "ZoiZ8fuDWInAcwPXaVeq")  # Josh — warm, smooth and steady
 AUDIO_CACHE_DIR = Path("audio_cache")
 
 TWILIO_TTS_VOICE = "Polly.Joanna"  # AWS Polly via Twilio — warm, professional
