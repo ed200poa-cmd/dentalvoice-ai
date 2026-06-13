@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 MODEL = "claude-haiku-4-5-20251001"
 
-SYSTEM_PROMPT = """You are Sarah, a friendly dental receptionist at Smile Care Dental. You help patients book appointments, answer questions about services, and provide office information. Keep responses under 40 words. Never give medical advice. If a patient has a dental emergency, immediately offer to transfer to a dentist.
+SYSTEM_PROMPT = """You are Alex, a friendly dental receptionist at Smile Care Dental. You help patients book appointments, answer questions about services, and provide office information. Keep responses under 40 words. Never give medical advice. If a patient has a dental emergency, immediately offer to transfer to a dentist.
 
 OFFICE KNOWLEDGE BASE:
 {faq_context}
@@ -132,7 +132,7 @@ def _extract_patient_name(text: str, existing_name: str) -> str:
 
 
 def get_greeting() -> str:
-    return "Thank you for calling Smile Care Dental. This is Sarah. How can I help you today?"
+    return "Thank you for calling Smile Care Dental. This is Alex. How can I help you today?"
 
 
 async def process_speech(call_sid: str, speech_input: str) -> tuple[str, bool, bool]:
