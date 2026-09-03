@@ -1,4 +1,4 @@
-# DentalVoice AI Demo
+# DentalVoice AI
 
 A production-ready AI Voice Agent for dental and medical practices. Patients call a real phone number and speak naturally — the AI handles appointment booking, FAQs, and warm transfers to human staff, all without a single button press.
 
@@ -8,7 +8,7 @@ Built with **Python FastAPI**, **Twilio Voice**, **Anthropic Claude** (claude-ha
 
 ---
 
-## What This Demo Does
+## What It Does
 
 - **Answers inbound calls** automatically via a Twilio phone number
 - **Understands natural speech** — no menus, no "press 1 for..."
