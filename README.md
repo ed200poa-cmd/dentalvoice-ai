@@ -4,7 +4,7 @@ A production-ready AI Voice Agent for dental and medical practices. Patients cal
 
 Built with **Python FastAPI**, **Twilio Voice**, **Anthropic Claude** (claude-haiku), and **ElevenLabs TTS**.
 
-**Live demo: [https://dentalvoice-ai-production.up.railway.app](https://dentalvoice-ai-production.up.railway.app)**
+**Live: [https://dentalvoice-ai-production.up.railway.app](https://dentalvoice-ai-production.up.railway.app)**
 
 ---
 
