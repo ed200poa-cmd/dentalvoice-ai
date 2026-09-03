@@ -4,6 +4,8 @@ A production-ready AI Voice Agent for dental and medical practices. Patients cal
 
 Built with **Python FastAPI**, **Twilio Voice**, **Anthropic Claude** (claude-haiku), and **ElevenLabs TTS**.
 
+**Live demo: [https://dentalvoice-ai-production.up.railway.app](https://dentalvoice-ai-production.up.railway.app)**
+
 ---
 
 ## What This Demo Does
@@ -125,7 +127,6 @@ The agent picks up immediately.
 
 ## Deploy to Railway
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app)
 
 ```bash
 # Install Railway CLI
